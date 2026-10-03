@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>鑫汇Pay · 扫码支付</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;
+  background:linear-gradient(160deg,#050505 0%,#0A1A10 100%);
+  min-height:100vh; padding:16px; color:#fff;
+}
+.container { max-width:440px; margin:0 auto; }
+.header { display:flex; align-items:center; gap:10px; padding:8px 0 20px; }
+.logo-icon {
+  width:40px; height:40px; background:#00C853; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:22px; color:#fff;
+}
+.logo-text { font-size:18px; font-weight:700; letter-spacing:0.5px; }
+
+.channel-card {
+  background:linear-gradient(135deg,#0F2A1E,#00C853);
+  border-radius:20px; padding:20px; text-align:center; margin-bottom:20px;
+  box-shadow:0 8px 32px rgba(0,200,83,0.25);
+}
+.channel-label { font-size:13px; color:rgba(255,255,255,0.75); margin-bottom:6px; }
+.channel-value { font-size:22px; font-weight:700; }
+.order-no {
+  display:inline-block; margin-top:12px; padding:4px 12px;
+  background:rgba(255,255,255,0.15); border-radius:20px;
+  font-size:11px; font-family:monospace; color:rgba(255,255,255,0.85);
+}
+
+.qr-panel {
+  background:#141414; border-radius:20px; padding:24px 20px;
+  border:1px solid #1F1F1F; text-align:center; margin-bottom:16px;
+}
+.qr-panel .tip { font-size:13px; color:#888; margin-bottom:16px; }
+.qr-panel .tip strong { color:#00C853; }
+.qr-box {
+  display:inline-block; padding:16px; background:#fff;
+  border-radius:16px; margin-bottom:12px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.3);
+}
+.qr-box img { display:block; width:240px; height:240px; object-fit:contain; }
+.save-tip {
+  display:inline-block; padding:8px 16px; background:#0A0A0A;
+  border:1px solid #1F1F1F; border-radius:10px;
+  font-size:12px; color:#aaa; margin-top:8px;
+}
+
+.steps {
+  background:#141414; border-radius:16px; padding:16px;
+  border:1px solid #1F1F1F; margin-bottom:16px;
+}
+.steps-title {
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; font-weight:600; margin-bottom:12px;
+}
+.steps-title .dot { width:6px; height:6px; background:#00C853; border-radius:50%; }
+.step {
+  display:flex; align-items:flex-start; gap:10px;
+  font-size:13px; color:#aaa; line-height:1.6; padding:4px 0;
+}
+.step .num {
+  flex-shrink:0; width:20px; height:20px; background:#00C853;
+  color:#fff; border-radius:50%; display:flex; align-items:center;
+  justify-content:center; font-size:11px; font-weight:700; margin-top:1px;
+}
+.step strong { color:#fff; }
+
+.warning {
+  background:rgba(255,193,7,0.08); border:1px solid rgba(255,193,7,0.3);
+  border-radius:14px; padding:14px; font-size:12.5px; color:#FFD54F;
+  line-height:1.6; margin-bottom:16px;
+}
+.warning strong { display:block; margin-bottom:4px; color:#FFC107; }
+
+.info-grid {
+  background:#0A0A0A; border-radius:14px; padding:14px 16px;
+  font-size:12px; color:#666;
+}
+.info-row {
+  display:flex; justify-content:space-between; padding:6px 0;
+  align-items:center; gap:10px;
+}
+.info-row .key { flex-shrink:0; }
+.info-row .val {
+  color:#ccc; font-family:monospace; text-align:right;
+  word-break:break-all; font-size:11.5px;
+}
+
+.footer {
+  text-align:center; color:#444; font-size:11px;
+  margin:24px 0 12px; line-height:1.8;
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="logo-icon">e</div>
+    <div class="logo-text">鑫汇Pay</div>
+  </div>
+
+  <div class="channel-card">
+    <div class="channel-label">支付方式</div>
+    <div class="channel-value" th:text="${channelName}">支付宝</div>
+    <div class="order-no" th:text="${orderNo}">DEP_xxx</div>
+  </div>
+
+  <div class="qr-panel">
+    <div class="tip">长按下方二维码保存，或<br>用<strong>另一台设备</strong>扫此码付款</div>
+    <div class="qr-box">
+      <img th:src="${qrImage}" alt="收款码">
+    </div>
+    <div class="save-tip">💡 长按图片可保存到相册</div>
+  </div>
+
+  <div class="steps">
+    <div class="steps-title"><span class="dot"></span>付款步骤</div>
+    <div class="step"><span class="num">1</span><span>长按上方二维码，<strong>保存到手机相册</strong></span></div>
+    <div class="step"><span class="num">2</span><span>打开<strong th:text="${channelName}">支付宝</strong>，点扫一扫 → 相册 → 选刚才的图</span></div>
+    <div class="step"><span class="num">3</span><span><strong>手动输入付款金额</strong>，完成付款</span></div>
+    <div class="step"><span class="num">4</span><span>回到 App，填写金额 + 支付单号提交</span></div>
+  </div>
+
+  <div class="warning">
+    <strong>⚠️ 重要提醒</strong>
+    付款后请务必回到 App 提交金额和支付单号，客服将在 5 分钟内审核入账。
+  </div>
+
+  <div class="info-grid">
+    <div class="info-row">
+      <span class="key">订单号</span>
+      <span class="val" th:text="${orderNo}">DEP_xxx</span>
+    </div>
+    <div class="info-row">
+      <span class="key">客服</span>
+      <span class="val" th:text="${supportContact}">@your_telegram</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 鑫汇Pay · 安全支付<br>
+    如有疑问请联系在线客服
+  </div>
+
+</div>
+</body>
+</html>

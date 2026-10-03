@@ -1,0 +1,101 @@
+server:
+  port: 18080
+spring:
+  application:
+    name: eusd-backend
+  datasource:
+    url: jdbc:h2:file:./data/eusd;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate.dialect: org.hibernate.dialect.H2Dialect
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: UTC
+alipay:
+  app-id: your_alipay_app_id
+  private-key: your_alipay_private_key
+  alipay-public-key: your_alipay_public_key
+  gateway-url: https://openapi.alipay.com/gateway.do
+  notify-url: https://your-domain.com/api/alipay/notify
+  return-url: https://your-domain.com/api/alipay/return
+wechat:
+  enabled: false
+  app-id: your_wechat_app_id
+  mch-id: your_mch_id
+  private-key-path: /root/eusd-fullstack/eusd-backend/certs/apiclient_key.pem
+  merchant-serial-number: your_serial_number
+  api-v3-key: your_api_v3_key
+  notify-url: https://your-domain.com/api/wechat/notify
+unionpay:
+  mer-id: your_mer_id
+  cert-path: /path/to/cert.pfx
+  cert-pwd: your_cert_password
+  back-url: https://your-domain.com/api/unionpay/notify
+  front-url: https://your-domain.com/api/unionpay/return
+  plan-id: your_plan_id
+  version: 5.1.0
+  sign-method: 01
+  charset: UTF-8
+  gateway-url: https://gateway.95516.com/gateway/api/backTransReq.do
+stripe:
+  secret-key: ${STRIPE_SECRET_KEY:}
+  publishable-key: ${STRIPE_PUBLISHABLE_KEY:}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+exchange:
+  api-url: https://api.exchangerate-api.com/v4/latest/CNY
+  fallback-rate: 0.1389
+  cache-minutes: 5
+  fee-rate: 0.005
+logging:
+  level:
+    root: INFO
+    com.eusd: DEBUG
+
+thirdpay:
+  enabled: false
+  gateway: https://你的易支付网关地址/mapi.php
+  api-url: https://你的易支付网关地址/submit.php
+  pid: 你的商户ID
+  key: 你的商户密钥
+  notify-url: https://你的域名/api/thirdpay/notify
+  return-url: https://你的域名/api/thirdpay/return
+
+# 收款码配置
+payment:
+  alipay-qr: /qr/alipay.png
+  wechat-qr: /qr/wechat.png
+  unionpay-qr: /qr/unionpay.png
+  support-contact: "@your_telegram"
+
+# ===== Alchemy Pay On-Ramp =====
+alchemy:
+  enabled: true
+  app-id: your_alchemy_app_id
+  secret: your_alchemy_secret
+  base-url: https://openapi.alchemypay.org   # 沙箱: https://openapi-test.alchemypay.org
+  callback-url: https://你的域名/api/onramp/webhook
+  settle-address: 你的TRC20收款地址          # 用户支付的USDT最终打到这里
+  settle-network: TRX                        # TRON网络
+  settle-crypto: USDT
+
+# ===== Bakong KHQR =====
+bakong:
+  enabled: true
+  token: 你的Bakong开发者令牌
+  account: xiwen@lantonpay
+  merchant-name: XinHPay
+  merchant-id: 969114467
+  acquiring-bank: LantonPay
+  merchant-city: Phnom Penh
+  currency: USD
+  api-url: https://api-bakong.nbc.gov.kh
