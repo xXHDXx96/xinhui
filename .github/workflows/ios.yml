@@ -1,0 +1,62 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 如果存在 Flutter 工程，用 Flutter 编译
+      - name: Check Flutter Project
+        id: check_flutter
+        run: |
+          if [ -f "eusd_app/pubspec.yaml" ]; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Flutter
+        if: steps.check_flutter.outputs.exists == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+          channel: 'stable'
+
+      - name: Build Flutter iOS (No Codesign)
+        if: steps.check_flutter.outputs.exists == 'true'
+        run: |
+          cd eusd_app
+          flutter pub get
+          cd ios
+          pod install
+          cd ..
+          flutter build ios --release --no-codesign
+
+      # 如果不存在 Flutter 工程，直接报错，提示你补代码
+      - name: No Project Found
+        if: steps.check_flutter.outputs.exists == 'false'
+        run: |
+          echo "eusd_app 中未找到 pubspec.yaml，无法编译 iOS。"
+          exit 1
+
+      - name: Package IPA
+        if: steps.check_flutter.outputs.exists == 'true'
+        run: |
+          cd eusd_app/build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -r eusd_app.ipa Payload
+
+      - name: Upload IPA
+        if: steps.check_flutter.outputs.exists == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eusd_app-ipa
+          path: eusd_app/build/ios/iphoneos/eusd_app.ipa
